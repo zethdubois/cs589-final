@@ -18,12 +18,14 @@ def plot_element(element, start_year, num_results):
     plt.clf()  # Clear the current figure
     data = pd.read_csv(element_files[element], encoding='ISO-8859-1')
 
-    # Filter data based on start_year and num_results
-    filtered_data = data[data['discoveryYear'] >= start_year].head(num_results)
-
+    # Filter data based on start_year
+    filtered_data = data[data['discoveryYear'] >= start_year]
     
-    # Determine the new Y-axis limits based on filtered data
-    y_max = len(filtered_data) - 1
+    # Calculate the new Y-axis minimum
+    y_min = data.index[data['discoveryYear'] >= start_year].min() - 1
+
+    # Limit the data to num_results
+    filtered_data = filtered_data.head(num_results)
 
     element_point = (0, 0)  # Central point for the element
 
@@ -37,6 +39,7 @@ def plot_element(element, start_year, num_results):
     plt.ylabel('Mineral Count')
 
     plt.xlim(left=start_year)
+    plt.ylim(y_min, y_min + num_results + 1)
 
     plt.draw()
 
