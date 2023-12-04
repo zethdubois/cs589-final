@@ -8,7 +8,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 element_files = {
     'Lithium': 'LI-query_filtered.csv',
     'Aluminum': 'AL-query_filtered.csv',
-    # ... other elements
+    'Nickel': 'NI-query_filtered.csv',
+    'Sodium': 'NA-query_filtered.csv',
+    'Silicon': 'SI-query_filtered.csv',
 }
 
 # Function to plot the selected element
@@ -18,6 +20,10 @@ def plot_element(element, start_year, num_results):
 
     # Filter data based on start_year and num_results
     filtered_data = data[data['discoveryYear'] >= start_year].head(num_results)
+
+    
+    # Determine the new Y-axis limits based on filtered data
+    y_max = len(filtered_data) - 1
 
     element_point = (0, 0)  # Central point for the element
 
@@ -29,6 +35,7 @@ def plot_element(element, start_year, num_results):
     plt.title(f'{element} Minerals Discovery Timeline')
     plt.xlabel('Discovery Year')
     plt.ylabel('Mineral Count')
+
     plt.xlim(left=start_year)
 
     plt.draw()
@@ -78,10 +85,13 @@ def update_sliders(element):
 root = Tk()
 root.title("RDF Mineral Chart")
 
+# Alphabetize the keys of the element_files dictionary
+sorted_elements = sorted(element_files.keys())
+
 # Dropdown menu for element selection
 selected_element = StringVar(root)
 selected_element.set("Select Mineral")  # Initial text
-dropdown = OptionMenu(root, selected_element, *element_files.keys(), command=dropdown_changed)
+dropdown = OptionMenu(root, selected_element, *sorted_elements, command=dropdown_changed)
 dropdown.grid(row=0, column=0, sticky="ew")
 
 # Create a matplotlib figure
