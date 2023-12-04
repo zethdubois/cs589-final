@@ -44,8 +44,15 @@ def plot_element(element, start_year, num_results):
     plt.draw()
 
 def dropdown_changed(*args):
-    update_sliders(selected_element.get())
-    plot_element(selected_element.get(), start_year_slider.get(), num_results_slider.get())
+    selected = selected_element.get()
+    if selected != "Select Mineral":
+        update_sliders(selected)
+        plot_element(selected, start_year_slider.get(), num_results_slider.get())
+    else:
+        # Clear the plot if "Select Mineral" is selected
+        plt.clf()
+        plt.draw()
+
 
 # Function to update the plot based on sliders
 def update_plot(*args):
@@ -53,9 +60,12 @@ def update_plot(*args):
 
 def update_sliders(element):
     if element != "Select Mineral":
+        # Enable sliders
+        start_year_slider.config(state='normal')
+        num_results_slider.config(state='normal')
+
         # Load data
         data = pd.read_csv(element_files[element], encoding='ISO-8859-1')
-
 
         # Update start_year_slider range and value
         new_min_year = data['discoveryYear'].min()
@@ -68,20 +78,11 @@ def update_sliders(element):
         num_results_slider.config(to=new_max_results, label=f"Number of Results (max {new_max_results})")
         num_results_slider.set(new_max_results // 2)
 
-        # Enable sliders
-        start_year_slider.config(state='normal')
-        num_results_slider.config(state='normal')
-
-
-
         plot_element(element, start_year_slider.get(), num_results_slider.get())    
     else:
         # Disable sliders
         start_year_slider.config(state='disabled')
         num_results_slider.config(state='disabled')
-
-    # Redraw the plot with updated values
-
 
 #-----------------------------------------MAIN
 # Initialize Tkinter window
@@ -111,10 +112,6 @@ start_year_slider.grid(row=2, column=0, sticky="ew")
 initial_num_results = min(1, 2)  # Adjust as needed
 num_results_slider = Scale(root, from_=1, to=initial_num_results, orient=HORIZONTAL, label="Number of Results", state='disabled')
 num_results_slider.grid(row=2, column=1, sticky="ew")
-
-# Manually invoke 'update_sliders' for the first element in the list
-initial_element = list(element_files.keys())[0]
-update_sliders(initial_element)
 
 # Bind sliders and dropdown to update_plot function
 start_year_slider.bind("<ButtonRelease-1>", update_plot)
